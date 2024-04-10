@@ -114,9 +114,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         if (value?.trim().isEmpty ?? true) {
                           return 'Enter your password';
                         }
-                        if (value!.length < 6) {
-                          return 'Your password should be more than 5 letters';
-                        }
+                        // if (value!.length < 6) {
+                        //   return 'Your password should be more than 5 letters';
+                        // }
                         return null;
                       },
                     ),
