@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/data.network_caller/models/user_model.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
 import 'package:task_manager_app/data.network_caller/utility/urls.dart';
 import 'package:task_manager_app/style.dart';
+import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
 import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
-
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
+
 import 'forgot_password_email.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -165,8 +167,12 @@ class _SignInScreenState extends State<SignInScreen> {
       setState(() {});
     }
     if (response.isSuccess) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MainBottomNavBar()));
+      await AuthController.saveUserInformation(response.jsonResponse['token'],
+          UserModel.fromJson(response.jsonResponse['data']));
+      if (mounted) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MainBottomNavBar()));
+      }
     } else {
       if (response.statusCode == 401) {
         if (mounted) {

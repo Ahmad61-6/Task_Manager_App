@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:task_manager_app/ui/contollers/auth_controller.dart';
+import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 
@@ -17,11 +19,15 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
   }
 
-  void goToSignInPage() {
+  void goToSignInPage() async {
+    final bool isLoggedIn = await AuthController.checkAuthState();
     Future.delayed(const Duration(seconds: 2)).then((value) =>
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const SignInScreen()),
+            MaterialPageRoute(
+                builder: (context) => isLoggedIn
+                    ? const MainBottomNavBar()
+                    : const SignInScreen()),
             (route) => false));
   }
 
