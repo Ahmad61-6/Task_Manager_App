@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart';
+import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 
 import 'network_response.dart';
 
@@ -12,9 +13,12 @@ class NetworkCaller {
       final Response response =
           await post(Uri.parse(url), body: jsonEncode(body), headers: {
         'Content-type': 'Application/json',
+        'token': AuthController.token.toString(),
       });
 
       log(response.statusCode.toString());
+      log(response.headers.toString());
+      log(response.body.toString());
 
       if (response.statusCode == 200) {
         return NetworkResponse(
