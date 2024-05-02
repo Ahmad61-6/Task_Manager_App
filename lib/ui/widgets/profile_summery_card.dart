@@ -20,6 +20,7 @@ class ProfileSummeryCard extends StatefulWidget {
 
 class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
   final Color color = const Color(0xFF2E8B57);
+  bool logOutInProgress = false;
 
   @override
   Widget build(BuildContext context) {

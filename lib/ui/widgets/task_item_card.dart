@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../data.network_caller/models/task.dart';
+
 class TaskItemCard extends StatelessWidget {
   final String status;
   final Color color;
+  final Task task;
 
   const TaskItemCard({
     Key? key,
     required this.status,
     required this.color,
+    required this.task,
   }) : super(key: key);
 
   @override
@@ -19,15 +23,15 @@ class TaskItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "This is a new task",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            Text(
+              task.title ?? '',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            const Text("Description"),
+            Text(task.description ?? ''),
             const SizedBox(
               height: 5,
             ),
-            const Text("Date: dd-mm-yyyy"),
+            Text('Date: ${task.createdDate}'),
             const SizedBox(
               height: 5,
             ),

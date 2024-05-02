@@ -3,6 +3,7 @@ import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
 import 'package:task_manager_app/data.network_caller/utility/urls.dart';
 import 'package:task_manager_app/style.dart';
+import 'package:task_manager_app/ui/screens/new_task_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
@@ -130,6 +131,8 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
         _descriptionTEController.clear();
         if (mounted) {
           showSnackMessage(context, 'New task added!');
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const NewTaskScreen()));
         }
       } else {
         if (mounted) {

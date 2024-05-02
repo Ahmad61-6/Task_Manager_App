@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
-import 'package:task_manager_app/ui/widgets/task_item_card.dart';
 
 class CompletedTaskScreen extends StatefulWidget {
   const CompletedTaskScreen({super.key});
@@ -24,10 +23,10 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
               child: ListView.builder(
                 itemCount: 5,
                 itemBuilder: (context, index) {
-                  return const TaskItemCard(
-                    status: "Completed",
-                    color: Colors.greenAccent,
-                  );
+                  // return const TaskItemCard(
+                  //   status: "Completed",
+                  //   color: Colors.greenAccent,
+                  // );
                 },
               ),
             ),

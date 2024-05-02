@@ -161,7 +161,8 @@ class _SignInScreenState extends State<SignInScreen> {
         body: {
           "email": _emailTEController.text.trim(),
           "password": _passwordTEController.text
-        });
+        },
+        isLogin: true);
     _logInProgress = false;
     if (mounted) {
       setState(() {});
