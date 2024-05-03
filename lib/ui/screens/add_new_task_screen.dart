@@ -30,10 +30,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              const ProfileSummeryCard(
-                title: "Ahmad",
-                subtitle: "ahmad@gmail.com",
-              ),
+              const ProfileSummeryCard(),
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(24.0),

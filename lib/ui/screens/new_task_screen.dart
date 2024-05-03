@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/data.network_caller/models/task_count.dart';
 import 'package:task_manager_app/data.network_caller/models/task_count_summery_list_model.dart';
@@ -77,15 +78,15 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   builder: (context) => const AddNewTaskScreen()));
         },
         backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          CupertinoIcons.add_circled_solid,
+          color: Colors.white,
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            const ProfileSummeryCard(
-              title: "Ahmad",
-              subtitle: "ahmad@gmail.com",
-            ),
+            const ProfileSummeryCard(),
             Visibility(
                 visible: getTaskCountSummeryInProgress == false &&
                     (taskCountSummeryListModel.taskCountList?.isNotEmpty ??

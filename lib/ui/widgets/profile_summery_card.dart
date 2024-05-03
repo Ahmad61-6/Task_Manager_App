@@ -6,12 +6,9 @@ import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 class ProfileSummeryCard extends StatefulWidget {
   const ProfileSummeryCard({
     super.key,
-    required this.title,
-    required this.subtitle,
     this.enableOnTap = true,
     this.showTrailingIcon = true,
   });
-  final String title, subtitle;
   final bool enableOnTap, showTrailingIcon;
 
   @override
@@ -37,12 +34,12 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
         child: Icon(Icons.person_outline),
       ),
       title: Text(
-        widget.title,
+        AuthController.user?.firstName ?? '',
         style:
             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        widget.subtitle,
+        AuthController.user?.email ?? '',
         style: const TextStyle(color: Colors.white),
       ),
       trailing: IconButton(

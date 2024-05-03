@@ -18,8 +18,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           children: [
             const ProfileSummeryCard(
-              title: "Ahmad",
-              subtitle: "ahmadmizan210@gmail.com",
               enableOnTap: false,
             ),
             Expanded(

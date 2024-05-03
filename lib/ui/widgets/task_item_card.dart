@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../data.network_caller/models/task.dart';
@@ -49,9 +50,15 @@ class TaskItemCard extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.delete_forever_outlined),
+                      icon: const Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.red,
+                      ),
                     ),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(CupertinoIcons.pencil_circle_fill,
+                            size: 30, color: Colors.green))
                   ],
                 )
               ],
