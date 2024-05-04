@@ -1,19 +1,52 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/data.network_caller/network_caller.dart';
 
 import '../../data.network_caller/models/task.dart';
+import '../../data.network_caller/utility/urls.dart';
 
-class TaskItemCard extends StatelessWidget {
+enum TaskStatus { New, Completed, Canceled, Progress }
+
+class TaskItemCard extends StatefulWidget {
   final String status;
   final Color color;
   final Task task;
+  final VoidCallback onStatusChange;
+  final Function(bool) showProgress;
 
   const TaskItemCard({
     Key? key,
     required this.status,
     required this.color,
     required this.task,
+    required this.onStatusChange,
+    required this.showProgress,
   }) : super(key: key);
+
+  @override
+  State<TaskItemCard> createState() => _TaskItemCardState();
+}
+
+class _TaskItemCardState extends State<TaskItemCard> {
+  Future<void> updateTaskStatus(String status) async {
+    widget.showProgress(true);
+    final response = await NetworkCaller()
+        .getRequest(Urls.updateTaskStatus(widget.task.sId ?? '', status));
+    if (response.isSuccess) {
+      widget.onStatusChange();
+    }
+    widget.showProgress(false);
+  }
+
+  Future<void> deleteTaskStatus(String status) async {
+    widget.showProgress(true);
+    final response = await NetworkCaller()
+        .getRequest(Urls.deleteTasks(widget.task.sId ?? ''));
+    if (response.isSuccess) {
+      widget.onStatusChange();
+    }
+    widget.showProgress(false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +58,14 @@ class TaskItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              task.title ?? '',
+              widget.task.title ?? '',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            Text(task.description ?? ''),
+            Text(widget.task.description ?? ''),
             const SizedBox(
               height: 5,
             ),
-            Text('Date: ${task.createdDate}'),
+            Text('Date: ${widget.task.createdDate}'),
             const SizedBox(
               height: 5,
             ),
@@ -41,22 +74,49 @@ class TaskItemCard extends StatelessWidget {
               children: [
                 Chip(
                   label: Text(
-                    status,
+                    widget.status,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  backgroundColor: color,
+                  backgroundColor: widget.color,
                 ),
                 Wrap(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Do you want to delete?'),
+                                actions: [
+                                  ButtonBar(
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            deleteTaskStatus(
+                                                widget.task.sId ?? '');
+                                          },
+                                          child: const Text('Yes')),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('No'))
+                                    ],
+                                  )
+                                ],
+                              );
+                            });
+                      },
                       icon: const Icon(
                         CupertinoIcons.delete,
                         color: Colors.red,
                       ),
                     ),
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showUpdateTaskModal();
+                        },
                         icon: const Icon(CupertinoIcons.pencil_circle_fill,
                             size: 30, color: Colors.green))
                   ],
@@ -68,5 +128,44 @@ class TaskItemCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void showUpdateTaskModal() {
+    List<ListTile> items = TaskStatus.values
+        .map((e) => ListTile(
+              title: Text(e.name),
+              onTap: () {
+                updateTaskStatus(e.name);
+                Navigator.pop(context);
+              },
+            ))
+        .toList();
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Update Status',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: items,
+            ),
+            actions: [
+              ButtonBar(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Cancel',
+                        style: TextStyle(color: Colors.blueGrey)),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 }

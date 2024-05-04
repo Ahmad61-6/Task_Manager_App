@@ -60,13 +60,19 @@ class _InProgressScreenState extends State<InProgressScreen> {
                     itemCount: taskListModel.taskList?.length ?? 0,
                     itemBuilder: (context, index) {
                       return TaskItemCard(
-                          status: 'Canceled',
-                          color: Colors.orangeAccent,
-                          task: taskListModel.taskList![index]);
-                      // return const TaskItemCard(
-                      //   status: "Progress",
-                      //   color: Colors.purple,
-                      // );
+                        showProgress: (inProgress) {
+                          taskProgressInProgress = inProgress;
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                        status: 'In Progress',
+                        color: Colors.orangeAccent,
+                        task: taskListModel.taskList![index],
+                        onStatusChange: () {
+                          getProgressTasks();
+                        },
+                      );
                     },
                   ),
                 ),

@@ -119,9 +119,20 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                     int reverseIndex =
                         taskListModel.taskList!.length - 1 - index;
                     return TaskItemCard(
+                      showProgress: (inProgress) {
+                        getNewTaskInProgress = inProgress;
+                        getTaskCountSummeryInProgress = inProgress;
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      },
                       status: "new",
                       color: Colors.blue,
                       task: taskListModel.taskList![reverseIndex],
+                      onStatusChange: () {
+                        getNewTaskList();
+                        getTaskCountSummeryList();
+                      },
                     );
                   },
                 ),

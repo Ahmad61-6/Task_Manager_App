@@ -60,13 +60,19 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
                     itemCount: taskListModel.taskList?.length ?? 0,
                     itemBuilder: (context, index) {
                       return TaskItemCard(
-                          status: 'Canceled',
-                          color: Colors.redAccent,
-                          task: taskListModel.taskList![index]);
-                      // return const TaskItemCard(
-                      //   status: "Canceled",
-                      //   color: Colors.redAccent,
-                      // );
+                        showProgress: (inProgress) {
+                          taskCanceledInProgress = inProgress;
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                        status: 'Canceled',
+                        color: Colors.redAccent,
+                        task: taskListModel.taskList![index],
+                        onStatusChange: () {
+                          getCanceledTasks();
+                        },
+                      );
                     },
                   ),
                 ),

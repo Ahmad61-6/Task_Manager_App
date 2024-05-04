@@ -60,9 +60,19 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
                     itemCount: taskListModel.taskList?.length ?? 0,
                     itemBuilder: (context, index) {
                       return TaskItemCard(
-                          status: 'Completed',
-                          color: Colors.greenAccent,
-                          task: taskListModel.taskList![index]);
+                        showProgress: (inProgress) {
+                          getCompletedTaskInProgress = inProgress;
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                        status: 'Completed',
+                        color: Colors.greenAccent,
+                        task: taskListModel.taskList![index],
+                        onStatusChange: () {
+                          getCompletedTaskList();
+                        },
+                      );
                     },
                   ),
                 ),
