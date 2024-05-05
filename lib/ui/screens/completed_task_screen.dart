@@ -54,28 +54,33 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
                 replacement: const Center(
                   child: CircularProgressIndicator(),
                 ),
-                child: RefreshIndicator(
-                  onRefresh: getCompletedTaskList,
-                  child: ListView.builder(
-                    itemCount: taskListModel.taskList?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return TaskItemCard(
-                        showProgress: (inProgress) {
-                          getCompletedTaskInProgress = inProgress;
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                        status: 'Completed',
-                        color: Colors.greenAccent,
-                        task: taskListModel.taskList![index],
-                        onStatusChange: () {
-                          getCompletedTaskList();
-                        },
-                      );
-                    },
-                  ),
-                ),
+                child: taskListModel.taskList == null ||
+                        taskListModel.taskList!.isEmpty
+                    ? const Center(
+                        child: Text('No completed tasks available',
+                            style: TextStyle(fontSize: 20, color: Colors.grey)))
+                    : RefreshIndicator(
+                        onRefresh: getCompletedTaskList,
+                        child: ListView.builder(
+                          itemCount: taskListModel.taskList?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return TaskItemCard(
+                              showProgress: (inProgress) {
+                                getCompletedTaskInProgress = inProgress;
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                              },
+                              status: 'Completed',
+                              color: Colors.greenAccent,
+                              task: taskListModel.taskList![index],
+                              onStatusChange: () {
+                                getCompletedTaskList();
+                              },
+                            );
+                          },
+                        ),
+                      ),
               ),
             ),
           ],

@@ -57,7 +57,7 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
           color: Colors.white70,
         ),
       ),
-      tileColor: color,
+      tileColor: Colors.green,
     );
   }
 }

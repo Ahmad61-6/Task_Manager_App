@@ -54,28 +54,33 @@ class _InProgressScreenState extends State<InProgressScreen> {
                 replacement: const Center(
                   child: CircularProgressIndicator(),
                 ),
-                child: RefreshIndicator(
-                  onRefresh: getProgressTasks,
-                  child: ListView.builder(
-                    itemCount: taskListModel.taskList?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return TaskItemCard(
-                        showProgress: (inProgress) {
-                          taskProgressInProgress = inProgress;
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                        status: 'In Progress',
-                        color: Colors.orangeAccent,
-                        task: taskListModel.taskList![index],
-                        onStatusChange: () {
-                          getProgressTasks();
-                        },
-                      );
-                    },
-                  ),
-                ),
+                child: taskListModel.taskList == null ||
+                        taskListModel.taskList!.isEmpty
+                    ? const Center(
+                        child: Text('No task is in Progress',
+                            style: TextStyle(fontSize: 20, color: Colors.grey)))
+                    : RefreshIndicator(
+                        onRefresh: getProgressTasks,
+                        child: ListView.builder(
+                          itemCount: taskListModel.taskList?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return TaskItemCard(
+                              showProgress: (inProgress) {
+                                taskProgressInProgress = inProgress;
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                              },
+                              status: 'In Progress',
+                              color: Colors.orangeAccent,
+                              task: taskListModel.taskList![index],
+                              onStatusChange: () {
+                                getProgressTasks();
+                              },
+                            );
+                          },
+                        ),
+                      ),
               ),
             ),
           ],

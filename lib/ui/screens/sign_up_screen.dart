@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
+import 'package:task_manager_app/data.network_caller/utility/urls.dart';
 import 'package:task_manager_app/style.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
-import 'package:task_manager_app/data.network_caller/utility/urls.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -200,6 +200,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _clearTextFields();
         if (mounted) {
           showSnackMessage(context, 'Account has been created! Please login.');
+          Navigator.pop(context);
         }
       } else {
         if (mounted) {

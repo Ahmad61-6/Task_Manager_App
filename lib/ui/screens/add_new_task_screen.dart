@@ -137,8 +137,6 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
         if (mounted) {
           showSnackMessage(context, 'New task added!');
           Navigator.pop(context, newTaskAdded);
-          // Navigator.push(context,
-          //     MaterialPageRoute(builder: (context) => const NewTaskScreen()));
         }
       } else {
         if (mounted) {

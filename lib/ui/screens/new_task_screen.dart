@@ -22,6 +22,7 @@ class NewTaskScreen extends StatefulWidget {
 class _NewTaskScreenState extends State<NewTaskScreen> {
   bool getNewTaskInProgress = false;
   bool getTaskCountSummeryInProgress = false;
+  bool taskCountChange = false;
   TaskListModel taskListModel = TaskListModel();
   TaskCountSummeryListModel taskCountSummeryListModel =
       TaskCountSummeryListModel();
@@ -45,6 +46,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Future<void> getNewTaskList() async {
     getNewTaskInProgress = true;
+    taskCountChange = true;
     if (mounted) {
       setState(() {});
     }
@@ -69,76 +71,93 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AddNewTaskScreen()));
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(
-          CupertinoIcons.add_circled_solid,
-          color: Colors.white,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        Navigator.pop(context, taskCountChange);
+      },
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final response = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddNewTaskScreen()));
+            if (response != null && response == true) {
+              getNewTaskList();
+              getTaskCountSummeryList();
+            }
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(
+            CupertinoIcons.add_circled_solid,
+            color: Colors.white,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const ProfileSummeryCard(),
-            Visibility(
-                visible: getTaskCountSummeryInProgress == false &&
-                    (taskCountSummeryListModel.taskCountList?.isNotEmpty ??
-                        false),
-                replacement: const LinearProgressIndicator(),
-                child: SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount:
-                          taskCountSummeryListModel.taskCountList?.length ?? 0,
+        body: SafeArea(
+          child: Column(
+            children: [
+              const ProfileSummeryCard(),
+              Visibility(
+                  visible: getTaskCountSummeryInProgress == false &&
+                      (taskCountSummeryListModel.taskCountList?.isNotEmpty ??
+                          false),
+                  replacement: const LinearProgressIndicator(),
+                  child: SizedBox(
+                    height: 120,
+                    child: RefreshIndicator(
+                      onRefresh: getTaskCountSummeryList,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              taskCountSummeryListModel.taskCountList?.length ??
+                                  0,
+                          itemBuilder: (context, index) {
+                            TaskCount taskCount =
+                                taskCountSummeryListModel.taskCountList![index];
+                            return FittedBox(
+                                child: CardWidget(
+                                    count: taskCount.sum.toString(),
+                                    status: taskCount.sId ?? ''));
+                          }),
+                    ),
+                  )),
+              Expanded(
+                child: Visibility(
+                  visible: getNewTaskInProgress == false,
+                  replacement: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  child: RefreshIndicator(
+                    onRefresh: getNewTaskList,
+                    child: ListView.builder(
+                      itemCount: taskListModel.taskList?.length ?? 0,
                       itemBuilder: (context, index) {
-                        TaskCount taskCount =
-                            taskCountSummeryListModel.taskCountList![index];
-                        return FittedBox(
-                            child: CardWidget(
-                                count: taskCount.sum.toString(),
-                                status: taskCount.sId ?? ''));
-                      }),
-                )),
-            Expanded(
-              child: Visibility(
-                visible: getNewTaskInProgress == false,
-                replacement: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                child: ListView.builder(
-                  itemCount: taskListModel.taskList?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    int reverseIndex =
-                        taskListModel.taskList!.length - 1 - index;
-                    return TaskItemCard(
-                      showProgress: (inProgress) {
-                        getNewTaskInProgress = inProgress;
-                        getTaskCountSummeryInProgress = inProgress;
-                        if (mounted) {
-                          setState(() {});
-                        }
+                        int reverseIndex =
+                            taskListModel.taskList!.length - 1 - index;
+                        return TaskItemCard(
+                          showProgress: (inProgress) {
+                            getNewTaskInProgress = inProgress;
+                            getTaskCountSummeryInProgress = inProgress;
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                          status: "new",
+                          color: Colors.blue,
+                          task: taskListModel.taskList![reverseIndex],
+                          onStatusChange: () {
+                            getNewTaskList();
+                            getTaskCountSummeryList();
+                          },
+                        );
                       },
-                      status: "new",
-                      color: Colors.blue,
-                      task: taskListModel.taskList![reverseIndex],
-                      onStatusChange: () {
-                        getNewTaskList();
-                        getTaskCountSummeryList();
-                      },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

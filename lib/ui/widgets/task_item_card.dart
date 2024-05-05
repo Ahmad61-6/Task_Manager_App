@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
+import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
 import '../../data.network_caller/models/task.dart';
 import '../../data.network_caller/utility/urls.dart';
@@ -87,24 +88,50 @@ class _TaskItemCardState extends State<TaskItemCard> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: const Text('Do you want to delete?'),
-                                actions: [
-                                  ButtonBar(
-                                    children: [
-                                      TextButton(
-                                          onPressed: () {
-                                            deleteTaskStatus(
-                                                widget.task.sId ?? '');
-                                          },
-                                          child: const Text('Yes')),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('No'))
-                                    ],
-                                  )
-                                ],
+                                title: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Delete!"),
+                                    Text(
+                                      "Once you delete, you can't get it back.",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    )
+                                  ],
+                                ),
+                                content: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () {
+                                          deleteTaskStatus(
+                                              widget.task.sId ?? "");
+                                          if (mounted) {
+                                            showSnackMessage(context,
+                                                "Task Deleted Successfully!");
+                                          }
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "Yes",
+                                          style: TextStyle(
+                                              color: Colors.red, fontSize: 16),
+                                        )),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "No",
+                                          style: TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 16),
+                                        )),
+                                  ],
+                                ),
                               );
                             });
                       },

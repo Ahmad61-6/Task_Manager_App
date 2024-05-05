@@ -54,28 +54,34 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
                 replacement: const Center(
                   child: CircularProgressIndicator(),
                 ),
-                child: RefreshIndicator(
-                  onRefresh: getCanceledTasks,
-                  child: ListView.builder(
-                    itemCount: taskListModel.taskList?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return TaskItemCard(
-                        showProgress: (inProgress) {
-                          taskCanceledInProgress = inProgress;
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                        status: 'Canceled',
-                        color: Colors.redAccent,
-                        task: taskListModel.taskList![index],
-                        onStatusChange: () {
-                          getCanceledTasks();
-                        },
-                      );
-                    },
-                  ),
-                ),
+                child: taskListModel.taskList == null ||
+                        taskListModel.taskList!.isEmpty
+                    ? const Center(
+                        child: Text('No canceled tasks available',
+                            style: TextStyle(fontSize: 20, color: Colors.grey)),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: getCanceledTasks,
+                        child: ListView.builder(
+                          itemCount: taskListModel.taskList?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return TaskItemCard(
+                              showProgress: (inProgress) {
+                                taskCanceledInProgress = inProgress;
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                              },
+                              status: 'Canceled',
+                              color: Colors.redAccent,
+                              task: taskListModel.taskList![index],
+                              onStatusChange: () {
+                                getCanceledTasks();
+                              },
+                            );
+                          },
+                        ),
+                      ),
               ),
             ),
           ],
