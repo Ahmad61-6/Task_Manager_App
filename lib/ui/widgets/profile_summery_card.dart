@@ -33,14 +33,20 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
       leading: const CircleAvatar(
         child: Icon(Icons.person_outline),
       ),
-      title: Text(
-        AuthController.user?.firstName ?? '',
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      title: ValueListenableBuilder<String?>(
+        valueListenable: AuthController.firstNameNotifier,
+        builder: (_, firstName, __) => Text(
+          firstName ?? '',
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
-      subtitle: Text(
-        AuthController.user?.email ?? '',
-        style: const TextStyle(color: Colors.white),
+      subtitle: ValueListenableBuilder<String?>(
+        valueListenable: AuthController.emailNotifier,
+        builder: (_, email, __) => Text(
+          email ?? '',
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       trailing: IconButton(
         onPressed: () async {
