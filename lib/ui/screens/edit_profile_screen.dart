@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:task_manager_app/data.network_caller/models/user_model.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
@@ -26,6 +31,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _updateProfileInProgress = false;
+
+  XFile? photo;
+  XFile? galleryFile;
 
   @override
   void initState() {
@@ -67,37 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const SizedBox(
                           height: 24,
                         ),
-                        Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8)),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    height: 50,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.grey,
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(8),
-                                            bottomLeft: Radius.circular(8))),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      "Photos",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  )),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              const Expanded(flex: 3, child: Text("empty"))
-                            ],
-                          ),
-                        ),
+                        photoPickerField(),
                         const SizedBox(
                           height: 16,
                         ),
@@ -198,37 +176,133 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(() {});
       }
+      String? photoInBase64;
       Map<String, dynamic> inputData = {
-        "email": _emailTEController.text.trim(),
         "firstName": _firstNameTEController.text.trim(),
         "lastName": _lastNameTEController.text.trim(),
+        "email": _emailTEController.text.trim(),
         "mobile": _numberTEController.text.trim(),
-        "photo": ""
       };
+
       if (_passwordTEController.text.isNotEmpty) {
         inputData['password'] = _passwordTEController.text;
       }
-      final NetworkResponse response = await NetworkCaller()
-          .postRequest(Urls.updateProfile, body: inputData);
+
+      if (photo != null) {
+        List<int> imageBytes = await photo!.readAsBytes();
+        photoInBase64 = base64Encode(imageBytes);
+        inputData['photo'] = photoInBase64;
+      }
+
+      final NetworkResponse response = await NetworkCaller().postRequest(
+        Urls.updateProfile,
+        body: inputData,
+      );
       _updateProfileInProgress = false;
       if (mounted) {
         setState(() {});
       }
       if (response.isSuccess) {
         AuthController.updateUserInformation(UserModel(
-          email: _emailTEController.text.trim(),
-          firstName: _firstNameTEController.text.trim(),
-          lastName: _lastNameTEController.text.trim(),
-          mobile: _numberTEController.text.trim(),
-        ));
+            email: _emailTEController.text.trim(),
+            firstName: _firstNameTEController.text.trim(),
+            lastName: _lastNameTEController.text.trim(),
+            mobile: _numberTEController.text.trim(),
+            photo: photoInBase64 ?? AuthController.user?.photo));
         if (mounted) {
-          showSnackMessage(context, 'Profile Updated Successfully!');
+          showSnackMessage(context, 'Update profile success!');
         }
       } else {
         if (mounted) {
-          showSnackMessage(
-              context, 'Profile Update Unsuccessful! Please try again!');
+          showSnackMessage(context, 'Update profile failed. Try again.');
         }
+      }
+    }
+  }
+
+  Container photoPickerField() {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              height: 50,
+              decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomLeft: Radius.circular(8),
+                  )),
+              alignment: Alignment.center,
+              child: const Text(
+                'Photo',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: InkWell(
+              onTap: () {
+                _showPicker(context: context);
+              },
+              child: Container(
+                padding: const EdgeInsets.only(left: 16),
+                child: Visibility(
+                  visible: photo == null,
+                  replacement: Text(photo?.name ?? ''),
+                  child: const Text('Select a photo'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPicker({
+    required BuildContext context,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Photo Library'),
+                onTap: () {
+                  getImage(ImageSource.gallery);
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Camera'),
+                onTap: () {
+                  getImage(ImageSource.camera);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future getImage(ImageSource img) async {
+    final XFile? image = await ImagePicker().pickImage(source: img);
+    if (image != null) {
+      photo = image;
+      if (mounted) {
+        setState(() {});
       }
     }
   }

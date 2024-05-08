@@ -9,6 +9,7 @@ class AuthController {
   static UserModel? user;
   static ValueNotifier<String?> emailNotifier = ValueNotifier(null);
   static ValueNotifier<String?> firstNameNotifier = ValueNotifier(null);
+  static ValueNotifier<String?> profilePhotoNotifier = ValueNotifier(null);
 
   static Future<void> saveUserInformation(String t, UserModel model) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -26,6 +27,7 @@ class AuthController {
     user = model;
     emailNotifier.value = model.email;
     firstNameNotifier.value = model.firstName;
+    profilePhotoNotifier.value = model.photo;
   }
 
   static Future<void> initializeUserCache() async {

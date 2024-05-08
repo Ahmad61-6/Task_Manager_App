@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/edit_profile_screen.dart';
@@ -21,6 +24,8 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
 
   @override
   Widget build(BuildContext context) {
+    Uint8List imageBytes =
+        const Base64Decoder().convert(AuthController.user?.photo ?? '');
     return ListTile(
       onTap: () {
         if (widget.enableOnTap) {
@@ -30,8 +35,16 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
                   builder: (context) => const EditProfileScreen()));
         }
       },
-      leading: const CircleAvatar(
-        child: Icon(Icons.person_outline),
+      leading: ValueListenableBuilder<String?>(
+        valueListenable: AuthController.profilePhotoNotifier,
+        builder: (_, photo, __) => AuthController.user?.photo == null
+            ? const CircleAvatar(
+                child: Icon(Icons.person_outline),
+              )
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image.memory(imageBytes, fit: BoxFit.cover),
+              ),
       ),
       title: ValueListenableBuilder<String?>(
         valueListenable: AuthController.firstNameNotifier,
