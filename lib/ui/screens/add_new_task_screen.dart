@@ -31,13 +31,13 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
         Navigator.pop(context, newTaskAdded);
       },
       child: Scaffold(
-        body: BodyBackground(
-          child: SafeArea(
-            child: Column(
-              children: [
-                const ProfileSummeryCard(),
-                Expanded(
-                    child: Padding(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const ProfileSummeryCard(),
+              Expanded(
+                  child: BodyBackground(
+                child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: SingleChildScrollView(
                     child: Form(
@@ -103,9 +103,9 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           ]),
                     ),
                   ),
-                ))
-              ],
-            ),
+                ),
+              ))
+            ],
           ),
         ),
       ),

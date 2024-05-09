@@ -89,8 +89,12 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: ElevatedButton(
                             style: appButtonStyle(),
                             onPressed: login,
-                            child:
-                                const Icon(Icons.arrow_circle_right_outlined)),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.normal),
+                            )),
                       ),
                     ),
                     const SizedBox(

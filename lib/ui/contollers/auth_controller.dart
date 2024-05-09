@@ -25,9 +25,9 @@ class AuthController {
     await sharedPreferences.setString('user', jsonEncode(model.toJson()));
 
     user = model;
-    emailNotifier.value = model.email;
-    firstNameNotifier.value = model.firstName;
-    profilePhotoNotifier.value = model.photo;
+    emailNotifier.value = user?.email;
+    firstNameNotifier.value = user?.firstName;
+    profilePhotoNotifier.value = user?.photo;
   }
 
   static Future<void> initializeUserCache() async {
