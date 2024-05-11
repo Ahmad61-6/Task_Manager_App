@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/utility/urls.dart';
 import 'package:task_manager_app/style.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
+import '../contollers/password_verification_sharedpreference.dart';
 import 'pin_verification.dart';
 
 class ForgotPasswordEmailScreen extends StatefulWidget {
@@ -17,19 +17,6 @@ class ForgotPasswordEmailScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
-  // Map<String, String> formValues = {'email': ''};
-  // inputOnChange(mapKey, textValue) {
-  //   formValues.update(mapKey, (value) => textValue);
-  //   setState(() {});
-  // }
-  //
-  // formOnSubmit() async {
-  //   if (formValues['email']!.isEmpty) {
-  //     if (mounted) {
-  //       showSnackMessage(context, 'Email required!', true);
-  //     }
-  //   } else {}
-  // }
   final TextEditingController _emailVTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -93,8 +80,12 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
                             onPressed: () {
                               emailVerification();
                             },
-                            child:
-                                const Icon(Icons.arrow_circle_right_outlined)),
+                            child: const Text(
+                              "Verify",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            )),
                       ),
                     ),
                     const SizedBox(
@@ -144,36 +135,32 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
       }
 
       // Normalize both email addresses by trimming spaces and converting to lower case
-      String enteredEmail = _emailVTEController.text.trim().toLowerCase();
-      String storedEmail =
-          AuthController.user?.email?.trim().toLowerCase() ?? "";
 
-      if (storedEmail == enteredEmail) {
-        final response =
-            await NetworkCaller().getRequest(Urls.verifyEmail(enteredEmail));
-        _emailVerificationInProgress = false;
+      final response = await NetworkCaller()
+          .getRequest(Urls.verifyEmail(_emailVTEController.text));
+      _emailVerificationInProgress = false;
+      if (mounted) {
+        setState(() {});
+      }
+      if (response.isSuccess) {
+        await writeEmailVerification(_emailVTEController.text);
         if (mounted) {
-          setState(() {});
-        }
-        if (response.isSuccess) {
-          if (mounted) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const PinVerificationScreen()));
-          }
-        } else {
-          if (mounted) {
-            showSnackMessage(context, 'Something went wrong! Please try again');
-          }
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PinVerificationScreen()));
         }
       } else {
         if (mounted) {
-          _emailVerificationInProgress = false;
-          setState(() {});
-          showSnackMessage(
-              context, 'Given Email is not valid! Provide a valid Email');
+          showSnackMessage(context, 'Something went wrong! Please try again');
         }
+      }
+    } else {
+      if (mounted) {
+        _emailVerificationInProgress = false;
+        setState(() {});
+        showSnackMessage(
+            context, 'Given Email is not valid! Provide a valid Email');
       }
     }
   }
