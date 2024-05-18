@@ -16,4 +16,7 @@ class Urls {
   static const String updateProfile = '$_baseUrl/profileUpdate';
   static String verifyEmail(String email) =>
       '$_baseUrl/RecoverVerifyEmail/$email';
+  static String verifyOTP(String email, String otp) =>
+      '$_baseUrl/RecoverVerifyOTP/$email/$otp';
+  static const String resetPassword = '$_baseUrl/RecoverResetPass';
 }

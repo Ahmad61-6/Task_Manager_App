@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
@@ -30,14 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   void goToSignInPage() async {
     final bool isLoggedIn = await AuthController.checkAuthState();
-    Future.delayed(const Duration(seconds: 4)).then((value) =>
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => isLoggedIn
-                    ? const MainBottomNavBar()
-                    : const SignInScreen()),
-            (route) => false));
+    Future.delayed(const Duration(seconds: 4)).then((value) => Get.offAll(
+        isLoggedIn ? const MainBottomNavBar() : const SignInScreen()));
   }
 
   @override

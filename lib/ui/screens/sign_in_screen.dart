@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/data.network_caller/models/user_model.dart';
-import 'package:task_manager_app/data.network_caller/network_caller.dart';
-import 'package:task_manager_app/data.network_caller/network_response.dart';
-import 'package:task_manager_app/data.network_caller/utility/urls.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/style.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
+import 'package:task_manager_app/ui/contollers/sign_in_controller.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
 import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
@@ -23,8 +20,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  bool _logInProgress = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final SignInController _signInController = Get.find<SignInController>();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
             padding: const EdgeInsets.all(24.0),
             child: SingleChildScrollView(
               child: Form(
-                key: _formkey,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -81,21 +78,24 @@ class _SignInScreenState extends State<SignInScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 38,
-                      child: Visibility(
-                        visible: _logInProgress == false,
-                        replacement: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        child: ElevatedButton(
-                            style: appButtonStyle(),
-                            onPressed: login,
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.normal),
-                            )),
-                      ),
+                      child: GetBuilder<SignInController>(
+                          builder: (signInController) {
+                        return Visibility(
+                          visible: signInController.logInProgress == false,
+                          replacement: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          child: ElevatedButton(
+                              style: appButtonStyle(),
+                              onPressed: login,
+                              child: const Text(
+                                "Login",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal),
+                              )),
+                        );
+                      }),
                     ),
                     const SizedBox(
                       height: 48,
@@ -154,39 +154,16 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> login() async {
-    if (!_formkey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    _logInProgress = true;
-    if (mounted) {
-      setState(() {});
-    }
-    NetworkResponse response = await NetworkCaller().postRequest(Urls.logInUrl,
-        body: {
-          "email": _emailTEController.text.trim(),
-          "password": _passwordTEController.text
-        },
-        isLogin: true);
-    _logInProgress = false;
-    if (mounted) {
-      setState(() {});
-    }
-    if (response.isSuccess) {
-      await AuthController.saveUserInformation(response.jsonResponse['token'],
-          UserModel.fromJson(response.jsonResponse['data']));
-      if (mounted) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MainBottomNavBar()));
-      }
+    final response = await _signInController.login(
+        _emailTEController.text.trim(), _passwordTEController.text);
+    if (response) {
+      Get.offAll(const MainBottomNavBar());
     } else {
-      if (response.statusCode == 401) {
-        if (mounted) {
-          showSnackMessage(context, 'Your have given wrong email/password');
-        }
-      } else {
-        if (mounted) {
-          showSnackMessage(context, 'log in failed! Please try again');
-        }
+      if (mounted) {
+        showSnackMessage(context, _signInController.failureMessage);
       }
     }
   }
