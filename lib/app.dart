@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager_app/ui/contollers/new_task_controller.dart';
 import 'package:task_manager_app/ui/contollers/sign_in_controller.dart';
 import 'package:task_manager_app/ui/screens/splash_screen.dart';
 
@@ -22,5 +23,6 @@ class ControllerBinders extends Bindings {
   @override
   void dependencies() {
     Get.put(SignInController());
+    Get.put(NewTaskController());
   }
 }

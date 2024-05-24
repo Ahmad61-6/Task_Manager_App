@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/data.network_caller/models/task_count.dart';
 import 'package:task_manager_app/data.network_caller/models/task_count_summery_list_model.dart';
-import 'package:task_manager_app/data.network_caller/models/task_list_model.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
 import 'package:task_manager_app/data.network_caller/utility/urls.dart';
+import 'package:task_manager_app/ui/contollers/new_task_controller.dart';
 import 'package:task_manager_app/ui/widgets/card_widget.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/task_item_card.dart';
@@ -20,10 +21,8 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  bool getNewTaskInProgress = false;
   bool getTaskCountSummeryInProgress = false;
   bool taskCountChange = false;
-  TaskListModel taskListModel = TaskListModel();
   TaskCountSummeryListModel taskCountSummeryListModel =
       TaskCountSummeryListModel();
 
@@ -44,28 +43,11 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
   }
 
-  Future<void> getNewTaskList() async {
-    getNewTaskInProgress = true;
-    taskCountChange = true;
-    if (mounted) {
-      setState(() {});
-    }
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Urls.getNewTasks);
-    if (response.isSuccess) {
-      taskListModel = TaskListModel.fromJson(response.jsonResponse);
-    }
-    getNewTaskInProgress = false;
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getNewTaskList();
+    Get.find<NewTaskController>().getNewTaskList();
     getTaskCountSummeryList();
   }
 
@@ -84,7 +66,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 MaterialPageRoute(
                     builder: (context) => const AddNewTaskScreen()));
             if (response != null && response == true) {
-              getNewTaskList();
+              Get.find<NewTaskController>().getNewTaskList();
               getTaskCountSummeryList();
             }
           },
@@ -123,38 +105,45 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                     ),
                   )),
               Expanded(
-                child: Visibility(
-                  visible: getNewTaskInProgress == false,
-                  replacement: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  child: RefreshIndicator(
-                    onRefresh: getNewTaskList,
-                    child: ListView.builder(
-                      itemCount: taskListModel.taskList?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        int reverseIndex =
-                            taskListModel.taskList!.length - 1 - index;
-                        return TaskItemCard(
-                          showProgress: (inProgress) {
-                            getNewTaskInProgress = inProgress;
-                            getTaskCountSummeryInProgress = inProgress;
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                          status: "new",
-                          color: Colors.blue,
-                          task: taskListModel.taskList![reverseIndex],
-                          onStatusChange: () {
-                            getNewTaskList();
-                            getTaskCountSummeryList();
-                          },
-                        );
-                      },
+                child:
+                    GetBuilder<NewTaskController>(builder: (newTaskController) {
+                  return Visibility(
+                    visible: newTaskController.getNewTaskInProgress == false,
+                    replacement: const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                  ),
-                ),
+                    child: RefreshIndicator(
+                      onRefresh: () => newTaskController.getNewTaskList(),
+                      child: ListView.builder(
+                        itemCount:
+                            newTaskController.taskListModel.taskList?.length ??
+                                0,
+                        itemBuilder: (context, index) {
+                          int reverseIndex =
+                              newTaskController.taskListModel.taskList!.length -
+                                  1 -
+                                  index;
+                          return TaskItemCard(
+                            showProgress: (inProgress) {
+                              getTaskCountSummeryInProgress = inProgress;
+                              if (mounted) {
+                                setState(() {});
+                              }
+                            },
+                            status: "new",
+                            color: Colors.blue,
+                            task: newTaskController
+                                .taskListModel.taskList![reverseIndex],
+                            onStatusChange: () {
+                              newTaskController.getNewTaskList();
+                              getTaskCountSummeryList();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                }),
               ),
             ],
           ),

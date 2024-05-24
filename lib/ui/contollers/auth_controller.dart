@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager_app/data.network_caller/models/user_model.dart';
 
-class AuthController {
+class AuthController extends GetxController {
   static String? token;
   static UserModel? user;
   static ValueNotifier<String?> emailNotifier = ValueNotifier(null);
