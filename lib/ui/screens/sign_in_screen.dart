@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager_app/style.dart';
-import 'package:task_manager_app/ui/contollers/sign_in_controller.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
 import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
+import '../controllers/sign_in_controller.dart';
 import 'forgot_password_email.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -91,6 +91,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               child: const Text(
                                 "Login",
                                 style: TextStyle(
+                                    fontSize: 16,
                                     color: Colors.white,
                                     fontWeight: FontWeight.normal),
                               )),

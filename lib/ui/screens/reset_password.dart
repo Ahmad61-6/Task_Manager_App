@@ -5,7 +5,7 @@ import 'package:task_manager_app/style.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 
-import '../contollers/password_verification_sharedpreference.dart';
+import '../controllers/password_verification_sharedPreference.dart';
 import '../widgets/snack_massage.dart';
 
 class ResetPasswordScreen extends StatefulWidget {

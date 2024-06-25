@@ -6,7 +6,7 @@ import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 import '../../data.network_caller/models/task.dart';
 import '../../data.network_caller/utility/urls.dart';
 
-enum TaskStatus { New, Completed, Canceled, Progress }
+enum TaskStatus { Completed, New, Canceled, Progress }
 
 class TaskItemCard extends StatefulWidget {
   final String status;

@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:task_manager_app/app.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 
+import '../ui/controllers/auth_controller.dart';
 import 'network_response.dart';
 
 class NetworkCaller {

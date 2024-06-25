@@ -3,17 +3,18 @@ import 'dart:convert';
 // import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_manager_app/data.network_caller/models/user_model.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
 import 'package:task_manager_app/style.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
 import '../../data.network_caller/utility/urls.dart';
+import '../controllers/auth_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -29,6 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _numberTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  AuthController authController = Get.find<AuthController>();
 
   bool _updateProfileInProgress = false;
 
@@ -39,10 +41,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _emailTEController.text = AuthController.user?.email ?? '';
-    _firstNameTEController.text = AuthController.user?.firstName ?? '';
-    _lastNameTEController.text = AuthController.user?.lastName ?? '';
-    _numberTEController.text = AuthController.user?.mobile ?? '';
+    _emailTEController.text = authController.user?.email ?? '';
+    _firstNameTEController.text = authController.user?.firstName ?? '';
+    _lastNameTEController.text = authController.user?.lastName ?? '';
+    _numberTEController.text = authController.user?.mobile ?? '';
   }
 
   @override
@@ -203,12 +205,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() {});
       }
       if (response.isSuccess) {
-        AuthController.updateUserInformation(UserModel(
+        authController.updateUserInformation(UserModel(
             email: _emailTEController.text.trim(),
             firstName: _firstNameTEController.text.trim(),
             lastName: _lastNameTEController.text.trim(),
             mobile: _numberTEController.text.trim(),
-            photo: photoInBase64 ?? AuthController.user?.photo));
+            photo: photoInBase64 ?? authController.user?.photo));
         if (mounted) {
           showSnackMessage(context, 'Update profile success!');
         }

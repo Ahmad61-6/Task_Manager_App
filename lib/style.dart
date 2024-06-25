@@ -16,7 +16,7 @@ InputDecoration textFormFieldDecoration(label) {
 ButtonStyle appButtonStyle() {
   return ElevatedButton.styleFrom(
       elevation: 1,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       backgroundColor: Colors.greenAccent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)));
 }

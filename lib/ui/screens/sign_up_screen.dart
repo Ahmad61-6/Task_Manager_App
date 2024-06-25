@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/data.network_caller/network_caller.dart';
-import 'package:task_manager_app/data.network_caller/network_response.dart';
-import 'package:task_manager_app/data.network_caller/utility/urls.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/style.dart';
+import 'package:task_manager_app/ui/controllers/sign_up_controller.dart';
+import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
 
@@ -19,9 +19,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameTEController = TextEditingController();
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
+  final SignUpController _signUpController = Get.find<SignUpController>();
 
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  bool _signUpInProgress = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: const EdgeInsets.all(24.0),
             child: SingleChildScrollView(
               child: Form(
-                key: _formkey,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -126,17 +126,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 38,
-                      child: Visibility(
-                        visible: _signUpInProgress == false,
-                        replacement: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        child: ElevatedButton(
-                            style: appButtonStyle(),
-                            onPressed: _signUp,
-                            child:
-                                const Icon(Icons.arrow_circle_right_outlined)),
-                      ),
+                      child: GetBuilder<SignUpController>(
+                          builder: (signUpController) {
+                        return Visibility(
+                          visible: signUpController.signUpInProgress == false,
+                          replacement: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          child: ElevatedButton(
+                              style: appButtonStyle(),
+                              onPressed: _signUp,
+                              child: const Text(
+                                "SignUp",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white),
+                              )),
+                        );
+                      }),
                     ),
                     const SizedBox(
                       height: 48,
@@ -178,34 +186,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    if (_formkey.currentState!.validate()) {
-      _signUpInProgress = true;
-      if (mounted) {
-        setState(() {});
-      }
-      final NetworkResponse response =
-          await NetworkCaller().postRequest(Urls.registrationUrl, body: {
-        "email": _emailTEController.text.trim(),
-        "firstName": _firstNameTEController.text.trim(),
-        "lastName": _lastNameTEController.text.trim(),
-        "mobile": _mobileTEController.text.trim(),
-        "password": _passwordTEController.text,
-        "photo": ""
-      });
-      _signUpInProgress = false;
-      if (mounted) {
-        setState(() {});
-      }
-      if (response.isSuccess) {
+    if (_formKey.currentState!.validate()) {
+      final response = await _signUpController.signUp(
+          _emailTEController.text.trim(),
+          _firstNameTEController.text.trim(),
+          _lastNameTEController.text.trim(),
+          _mobileTEController.text.trim(),
+          _passwordTEController.text);
+      if (response) {
         _clearTextFields();
         if (mounted) {
-          showSnackMessage(context, 'Account has been created! Please login.');
-          Navigator.pop(context);
+          showSnackMessage(context, _signUpController.failureMessage);
+          Get.offAll(const SignInScreen());
         }
       } else {
         if (mounted) {
-          showSnackMessage(
-              context, 'Account creation failed! Please try again.', true);
+          showSnackMessage(context, _signUpController.failureMessage, true);
         }
       }
     }

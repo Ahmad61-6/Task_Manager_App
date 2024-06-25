@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_bar.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
+
+import '../controllers/auth_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void goToSignInPage() async {
-    final bool isLoggedIn = await AuthController.checkAuthState();
+    final bool isLoggedIn = await Get.find<AuthController>().checkAuthState();
     Future.delayed(const Duration(seconds: 4)).then((value) => Get.offAll(
         isLoggedIn ? const MainBottomNavBar() : const SignInScreen()));
   }

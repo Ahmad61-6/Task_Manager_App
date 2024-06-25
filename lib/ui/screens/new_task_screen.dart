@@ -2,15 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager_app/data.network_caller/models/task_count.dart';
-import 'package:task_manager_app/data.network_caller/models/task_count_summery_list_model.dart';
-import 'package:task_manager_app/data.network_caller/network_caller.dart';
-import 'package:task_manager_app/data.network_caller/network_response.dart';
-import 'package:task_manager_app/data.network_caller/utility/urls.dart';
-import 'package:task_manager_app/ui/contollers/new_task_controller.dart';
+import 'package:task_manager_app/ui/controllers/task_count_summery_controller.dart';
 import 'package:task_manager_app/ui/widgets/card_widget.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/task_item_card.dart';
 
+import '../controllers/new_task_controller.dart';
 import "add_new_task_screen.dart";
 
 class NewTaskScreen extends StatefulWidget {
@@ -21,34 +18,15 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  bool getTaskCountSummeryInProgress = false;
   bool taskCountChange = false;
-  TaskCountSummeryListModel taskCountSummeryListModel =
-      TaskCountSummeryListModel();
-
-  Future<void> getTaskCountSummeryList() async {
-    getTaskCountSummeryInProgress = true;
-    if (mounted) {
-      setState(() {});
-    }
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Urls.getTaskStatusCount);
-    if (response.isSuccess) {
-      taskCountSummeryListModel =
-          TaskCountSummeryListModel.fromJson(response.jsonResponse);
-    }
-    getTaskCountSummeryInProgress = false;
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  NewTaskController newTaskController = Get.find<NewTaskController>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Get.find<NewTaskController>().getNewTaskList();
-    getTaskCountSummeryList();
+    Get.find<TaskCountSummeryController>().getTaskCountSummeryList();
   }
 
   @override
@@ -66,8 +44,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 MaterialPageRoute(
                     builder: (context) => const AddNewTaskScreen()));
             if (response != null && response == true) {
-              Get.find<NewTaskController>().getNewTaskList();
-              getTaskCountSummeryList();
+              Get.find<TaskCountSummeryController>().getTaskCountSummeryList();
             }
           },
           backgroundColor: Colors.green,
@@ -80,30 +57,40 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           child: Column(
             children: [
               const ProfileSummeryCard(),
-              Visibility(
-                  visible: getTaskCountSummeryInProgress == false &&
-                      (taskCountSummeryListModel.taskCountList?.isNotEmpty ??
-                          false),
-                  replacement: const LinearProgressIndicator(),
-                  child: SizedBox(
-                    height: 120,
-                    child: RefreshIndicator(
-                      onRefresh: getTaskCountSummeryList,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              taskCountSummeryListModel.taskCountList?.length ??
-                                  0,
-                          itemBuilder: (context, index) {
-                            TaskCount taskCount =
-                                taskCountSummeryListModel.taskCountList![index];
-                            return FittedBox(
-                                child: CardWidget(
-                                    count: taskCount.sum.toString(),
-                                    status: taskCount.sId ?? ''));
-                          }),
-                    ),
-                  )),
+              GetBuilder<TaskCountSummeryController>(
+                  builder: (taskCountSummeryController) {
+                return Visibility(
+                    visible: taskCountSummeryController
+                                .getTaskCountSummeryInProgress ==
+                            false &&
+                        (taskCountSummeryController.taskCountSummeryListModel
+                                .taskCountList?.isNotEmpty ??
+                            false),
+                    replacement: const LinearProgressIndicator(),
+                    child: SizedBox(
+                      height: 120,
+                      child: RefreshIndicator(
+                        onRefresh: () => taskCountSummeryController
+                            .getTaskCountSummeryList(),
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: taskCountSummeryController
+                                    .taskCountSummeryListModel
+                                    .taskCountList
+                                    ?.length ??
+                                0,
+                            itemBuilder: (context, index) {
+                              TaskCount taskCount = taskCountSummeryController
+                                  .taskCountSummeryListModel
+                                  .taskCountList![index];
+                              return FittedBox(
+                                  child: CardWidget(
+                                      count: taskCount.sum.toString(),
+                                      status: taskCount.sId ?? ''));
+                            }),
+                      ),
+                    ));
+              }),
               Expanded(
                 child:
                     GetBuilder<NewTaskController>(builder: (newTaskController) {
@@ -125,7 +112,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                                   index;
                           return TaskItemCard(
                             showProgress: (inProgress) {
-                              getTaskCountSummeryInProgress = inProgress;
+                              Get.find<TaskCountSummeryController>()
+                                  .setTaskCountSummeryInProgress(inProgress);
                               if (mounted) {
                                 setState(() {});
                               }
@@ -136,7 +124,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                                 .taskListModel.taskList![reverseIndex],
                             onStatusChange: () {
                               newTaskController.getNewTaskList();
-                              getTaskCountSummeryList();
+                              Get.find<TaskCountSummeryController>()
+                                  .getTaskCountSummeryList();
                             },
                           );
                         },

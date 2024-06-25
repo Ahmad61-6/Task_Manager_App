@@ -6,7 +6,7 @@ import 'package:task_manager_app/style.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 
-import '../contollers/password_verification_sharedpreference.dart';
+import '../controllers/password_verification_sharedPreference.dart';
 import 'reset_password.dart';
 
 class PinVerificationScreen extends StatefulWidget {

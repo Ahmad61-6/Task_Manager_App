@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/ui/contollers/auth_controller.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/ui/screens/edit_profile_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
+
+import '../controllers/auth_controller.dart';
 
 class ProfileSummeryCard extends StatefulWidget {
   const ProfileSummeryCard({
@@ -24,20 +26,19 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
 
   @override
   Widget build(BuildContext context) {
-    Uint8List imageBytes =
-        const Base64Decoder().convert(AuthController.user?.photo ?? '');
-    return ListTile(
-      onTap: () {
-        if (widget.enableOnTap) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const EditProfileScreen()));
-        }
-      },
-      leading: ValueListenableBuilder<String?>(
-        valueListenable: AuthController.profilePhotoNotifier,
-        builder: (_, photo, __) => AuthController.user?.photo == null
+    return GetBuilder<AuthController>(builder: (authController) {
+      Uint8List imageBytes =
+          const Base64Decoder().convert(authController.user?.photo ?? '');
+      return ListTile(
+        onTap: () {
+          if (widget.enableOnTap) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const EditProfileScreen()));
+          }
+        },
+        leading: authController.user?.photo == null
             ? const CircleAvatar(
                 child: Icon(Icons.person_outline),
               )
@@ -45,38 +46,32 @@ class _ProfileSummeryCardState extends State<ProfileSummeryCard> {
                 borderRadius: BorderRadius.circular(100),
                 child: Image.memory(imageBytes, fit: BoxFit.cover),
               ),
-      ),
-      title: ValueListenableBuilder<String?>(
-        valueListenable: AuthController.firstNameNotifier,
-        builder: (_, firstName, __) => Text(
-          firstName ?? '',
+        title: Text(
+          authController.user?.firstName ?? '',
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-      ),
-      subtitle: ValueListenableBuilder<String?>(
-        valueListenable: AuthController.emailNotifier,
-        builder: (_, email, __) => Text(
-          email ?? '',
+        subtitle: Text(
+          authController.user?.email ?? '',
           style: const TextStyle(color: Colors.white),
         ),
-      ),
-      trailing: IconButton(
-        onPressed: () async {
-          await AuthController.clearAuthData();
-          if (mounted) {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const SignInScreen()),
-                (route) => false);
-          }
-        },
-        icon: const Icon(
-          Icons.logout,
-          color: Colors.white70,
+        trailing: IconButton(
+          onPressed: () async {
+            await AuthController.clearAuthData();
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                  (route) => false);
+            }
+          },
+          icon: const Icon(
+            Icons.logout,
+            color: Colors.white70,
+          ),
         ),
-      ),
-      tileColor: Colors.green,
-    );
+        tileColor: Colors.green,
+      );
+    });
   }
 }

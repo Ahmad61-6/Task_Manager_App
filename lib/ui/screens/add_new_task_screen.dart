@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/data.network_caller/network_caller.dart';
 import 'package:task_manager_app/data.network_caller/network_response.dart';
 import 'package:task_manager_app/data.network_caller/utility/urls.dart';
@@ -6,6 +7,8 @@ import 'package:task_manager_app/style.dart';
 import 'package:task_manager_app/ui/widgets/body_background.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/snack_massage.dart';
+
+import '../controllers/new_task_controller.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
@@ -134,6 +137,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
         newTaskAdded = true;
         _subjectTEController.clear();
         _descriptionTEController.clear();
+        Get.find<NewTaskController>().getNewTaskList();
         if (mounted) {
           showSnackMessage(context, 'New task added!');
           Navigator.pop(context, newTaskAdded);
