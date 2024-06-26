@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager_app/ui/controllers/completed_task_controller.dart';
 import 'package:task_manager_app/ui/controllers/sign_up_controller.dart';
 import 'package:task_manager_app/ui/controllers/task_count_summery_controller.dart';
+import 'package:task_manager_app/ui/controllers/task_in_progress_controller.dart';
 import 'package:task_manager_app/ui/screens/splash_screen.dart';
 
 import 'ui/controllers/auth_controller.dart';
+import 'ui/controllers/cancel_task_controller.dart';
 import 'ui/controllers/new_task_controller.dart';
 import 'ui/controllers/sign_in_controller.dart';
 
@@ -31,5 +34,8 @@ class ControllerBinders extends Bindings {
     Get.put(TaskCountSummeryController());
     Get.put(AuthController());
     Get.put(SignUpController());
+    Get.put(CancelTaskController());
+    Get.put(CompletedTaskController());
+    Get.put(TaskInProgressController());
   }
 }

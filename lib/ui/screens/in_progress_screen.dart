@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:task_manager_app/ui/controllers/task_in_progress_controller.dart';
 import 'package:task_manager_app/ui/widgets/profile_summery_card.dart';
 import 'package:task_manager_app/ui/widgets/task_item_card.dart';
-
-import '../../data.network_caller/models/task_list_model.dart';
-import '../../data.network_caller/network_caller.dart';
-import '../../data.network_caller/network_response.dart';
-import '../../data.network_caller/utility/urls.dart';
 
 class InProgressScreen extends StatefulWidget {
   const InProgressScreen({super.key});
@@ -15,30 +12,11 @@ class InProgressScreen extends StatefulWidget {
 }
 
 class _InProgressScreenState extends State<InProgressScreen> {
-  bool taskProgressInProgress = false;
-  TaskListModel taskListModel = TaskListModel();
-
-  Future<void> getProgressTasks() async {
-    taskProgressInProgress = true;
-    if (mounted) {
-      setState(() {});
-      final NetworkResponse response =
-          await NetworkCaller().getRequest(Urls.getProgressTasks);
-      if (response.isSuccess) {
-        taskListModel = TaskListModel.fromJson(response.jsonResponse);
-      }
-      taskProgressInProgress = false;
-      if (mounted) {
-        setState(() {});
-      }
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProgressTasks();
+    Get.find<TaskInProgressController>().getProgressTasks();
   }
 
   @override
@@ -49,39 +27,47 @@ class _InProgressScreenState extends State<InProgressScreen> {
           children: [
             const ProfileSummeryCard(),
             Expanded(
-              child: Visibility(
-                visible: taskProgressInProgress == false,
-                replacement: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                child: taskListModel.taskList == null ||
-                        taskListModel.taskList!.isEmpty
-                    ? const Center(
-                        child: Text('No task is in Progress',
-                            style: TextStyle(fontSize: 20, color: Colors.grey)))
-                    : RefreshIndicator(
-                        onRefresh: getProgressTasks,
-                        child: ListView.builder(
-                          itemCount: taskListModel.taskList?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            return TaskItemCard(
-                              showProgress: (inProgress) {
-                                taskProgressInProgress = inProgress;
-                                if (mounted) {
-                                  setState(() {});
-                                }
-                              },
-                              status: 'In Progress',
-                              color: Colors.orangeAccent,
-                              task: taskListModel.taskList![index],
-                              onStatusChange: () {
-                                getProgressTasks();
-                              },
-                            );
-                          },
+              child: GetBuilder<TaskInProgressController>(
+                  builder: (inProgressTask) {
+                return Visibility(
+                  visible: inProgressTask.taskProgressInProgress == false,
+                  replacement: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  child: inProgressTask.taskListModel.taskList == null ||
+                          inProgressTask.taskListModel.taskList!.isEmpty
+                      ? const Center(
+                          child: Text('No task is in Progress',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.grey)))
+                      : RefreshIndicator(
+                          onRefresh: inProgressTask.getProgressTasks,
+                          child: ListView.builder(
+                            itemCount:
+                                inProgressTask.taskListModel.taskList?.length ??
+                                    0,
+                            itemBuilder: (context, index) {
+                              return TaskItemCard(
+                                showProgress: (inProgress) {
+                                  inProgressTask.taskProgressInProgress =
+                                      inProgress;
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
+                                },
+                                status: 'In Progress',
+                                color: Colors.orangeAccent,
+                                task: inProgressTask
+                                    .taskListModel.taskList![index],
+                                onStatusChange: () {
+                                  inProgressTask.getProgressTasks();
+                                },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-              ),
+                );
+              }),
             ),
           ],
         ),
